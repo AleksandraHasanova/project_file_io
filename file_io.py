@@ -5,15 +5,18 @@ from tkinter import messagebox as mb
 from tkinter import ttk
 
 def get_response():
-    file=fd.askopenfilename()
-    if file:
-        f = {'file': open(file, 'rb')}
-        answer_json = requests.post('https://file.io/', files=f)
-        if answer_json.status_code == 404:
-            mb.showerror('Ошибка', 'Неверно указан путь к сайту')
-        elif answer_json.status_code == 200:
-            link = answer_json.json()['link']
-            e.insert(0, link)
+    try:
+        file=fd.askopenfilename()
+        if file:
+            with open(file, 'rb') as fi:
+                f = {'file': fi}
+                answer_json = requests.post('https://file.io/', files=f)
+                if answer_json.status_code == 200:
+                    link = answer_json.json()['link']
+                    e.delete(0, END)
+                    e.insert(0, link)
+    except Exception as ex:
+        mb.showerror('Ошибка', f'Произошла ошибка: {ex}')
 
 
 window = Tk()
